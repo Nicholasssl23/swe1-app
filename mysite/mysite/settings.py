@@ -29,7 +29,9 @@ SECRET_KEY = 'django-insecure-)p=221bf9!j1uje8bm!5-62zucj4t)q*-6$%eqius(%!m31og-
 DEBUG = True
 
 # More permissive ALLOWED_HOSTS for debugging
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1",
+                 "mysite-env.eba-mxsaicyg.us-west-1.elasticbeanstalk.com",
+                 ".elasticbeanstalk.com"]
 
 
 # Application definition
@@ -53,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'mysite.urls'
+ROOT_URLCONF = "mysite.mysite.urls"
 
 TEMPLATES = [
     {
