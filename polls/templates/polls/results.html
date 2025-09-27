@@ -1,0 +1,11 @@
+<!doctype html>
+<html><body>
+<h1>Results: {{ question.question_text }}</h1>
+<ul>
+  {% for c in question.choice_set.all %}
+    <li>{{ c.choice_text }} — {{ c.votes }} vote{{ c.votes|pluralize }}</li>
+  {% endfor %}
+</ul>
+<p><a href="{% url 'polls:detail' question.id %}">Vote again?</a></p>
+<p><a href="{% url 'polls:index' %}">Back to list</a></p>
+</body></html>
