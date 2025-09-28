@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # ← add this line
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -85,7 +85,7 @@ WSGI_APPLICATION = "mysite.mysite.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-SQLITE_DIR = os.environ.get("SQLITE_DIR", BASE_DIR)  # you set /var/app/data
+SQLITE_DIR = os.environ.get("SQLITE_DIR", BASE_DIR)
 if os.getenv("RDS_DB_NAME"):
     DATABASES = {
         "default": {

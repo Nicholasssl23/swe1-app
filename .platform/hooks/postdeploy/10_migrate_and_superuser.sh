@@ -21,11 +21,11 @@ export DJANGO_SETTINGS_MODULE="mysite.mysite.settings"
 cd "$APP_DIR"
 python -V
 
-# Run Django commands as the app user so file ownership is correct
+# Run Django commands
 runuser -u webapp -- bash -lc "python manage.py migrate --noinput"
 runuser -u webapp -- bash -lc "python manage.py collectstatic --noinput || true"
 
-# Idempotent superuser (runs as app user too)
+#  superuser (runs as app user too)
 runuser -u webapp -- bash -lc "python manage.py shell <<'PY'
 from django.contrib.auth import get_user_model
 User = get_user_model()
