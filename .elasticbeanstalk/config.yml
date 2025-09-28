@@ -1,14 +1,17 @@
 branch-defaults:
   main:
-    environment: mysite-env
+    environment: Test-env
 environment-defaults:
+  Test-env:
+    branch: null
+    repository: null
   mysite-env:
     branch: null
     repository: null
 global:
-  application_name: swe1-app
-  default_ec2_keyname: null
-  default_platform: Python 3.12
+  application_name: Test
+  default_ec2_keyname: swe1-eb
+  default_platform: Python 3.12 running on 64bit Amazon Linux 2023
   default_region: us-west-1
   include_git_submodules: true
   instance_profile: null

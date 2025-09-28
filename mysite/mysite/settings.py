@@ -81,10 +81,11 @@ WSGI_APPLICATION = "mysite.mysite.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+SQLITE_DIR = os.environ.get("SQLITE_DIR", BASE_DIR)  # you set /var/app/data
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(SQLITE_DIR, "db.sqlite3"),
     }
 }
 
