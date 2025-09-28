@@ -86,12 +86,26 @@ WSGI_APPLICATION = "mysite.mysite.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 SQLITE_DIR = os.environ.get("SQLITE_DIR", BASE_DIR)  # you set /var/app/data
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(SQLITE_DIR, "db.sqlite3"),
+if os.getenv("RDS_DB_NAME"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("RDS_DB_NAME"),
+            "USER": os.getenv("RDS_USERNAME"),
+            "PASSWORD": os.getenv("RDS_PASSWORD"),
+            "HOST": os.getenv("RDS_HOSTNAME"),
+            "PORT": os.getenv("RDS_PORT", "5432"),
+        }
     }
-}
+else:
+    SQLITE_DIR = Path("/var/app/data")
+    SQLITE_DIR.mkdir(parents=True, exist_ok=True)  # harmless locally; on EB we also chmod in hook
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": str(SQLITE_DIR / "db.sqlite3"),
+        }
+    }
 
 
 # Password validation
