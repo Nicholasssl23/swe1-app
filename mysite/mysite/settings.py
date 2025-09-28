@@ -28,12 +28,16 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Temporarily enable DEBUG to see errors
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")  # fallback for local
 DEBUG = os.environ.get("DEBUG", "True") == "True"
-
+eb_hostname = os.environ.get('ELASTICBEANSTALK_HOST')
 # More permissive ALLOWED_HOSTS for debugging
 ALLOWED_HOSTS = ["localhost", "127.0.0.1",
                  "mysite-env.eba-mxsaicyg.us-west-1.elasticbeanstalk.com",
                  ".elasticbeanstalk.com"]
-
+# Get the EB hostname from the environment variable
+eb_hostname = os.environ.get('ELASTICBEANSTALK_HOST')
+# If the variable exists, add its value to the list
+if eb_hostname:
+    ALLOWED_HOSTS.append(eb_hostname)
 
 # Application definition
 

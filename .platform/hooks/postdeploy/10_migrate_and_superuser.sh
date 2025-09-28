@@ -1,39 +1,43 @@
 #!/usr/bin/env bash
-set -e
+set -Eeuo pipefail
 
-# Move to app dir
-cd /var/app/current
+APP_DIR="/var/app/current"
+# Find EB's virtualenv bin dir (name changes every deploy)
+VENV_BIN="$(ls -d /var/app/venv/*/bin | head -n1)"
 
-# Make sure we use the app's virtualenv Python
-PYTHON=$(which python || which python3)
+if [[ -z "${VENV_BIN:-}" || ! -x "$VENV_BIN/python" ]]; then
+  echo "ERROR: EB virtualenv python not found under /var/app/venv/*/bin" >&2
+  exit 1
+fi
 
-# Run migrations
-$PYTHON manage.py migrate --noinput
+export PATH="$VENV_BIN:$PATH"
+export DJANGO_SETTINGS_MODULE="mysite.mysite.settings"
 
-# Create or update the superuser using EB env vars
-# (DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_PASSWORD)
-$PYTHON manage.py shell <<'PYCODE'
-import os
+cd "$APP_DIR"
+
+python -V
+
+# DB migrations
+python manage.py migrate --noinput
+
+# (optional) collect static if you serve via WhiteNoise
+python manage.py collectstatic --noinput || true
+
+# Create/update superuser idempotently
+python manage.py shell <<'PY'
 from django.contrib.auth import get_user_model
-
-username = os.environ.get("DJANGO_SUPERUSER_USERNAME", "admin")
-email    = os.environ.get("DJANGO_SUPERUSER_EMAIL", "nicholassilvasantosrj@gmail.com")
-password = os.environ.get("DJANGO_SUPERUSER_PASSWORD", "SomeStrongPass123")
-
 User = get_user_model()
-u, created = User.objects.get_or_create(username=username, defaults={
-    "email": email, "is_staff": True, "is_superuser": True, "is_active": True
-})
-if not created:
-    # make sure it has staff/superuser and update email
-    changed = False
-    if not u.is_staff: u.is_staff = True; changed = True
-    if not u.is_superuser: u.is_superuser = True; changed = True
-    if email and u.email != email: u.email = email; changed = True
-    if changed: u.save()
+email = "nicholassilvasantosrj@gmail.com"
+username = "admin"
+password = "ChangeMe_Once_Logged_In_123"
 
-if password:
+u, created = User.objects.get_or_create(username=username, defaults={"email": email})
+if created:
     u.set_password(password)
+    u.is_superuser = True
+    u.is_staff = True
     u.save()
-print(f"Superuser ready: {u.username} / {u.email}")
-PYCODE
+    print("Superuser created:", username, email)
+else:
+    print("Superuser already exists:", username)
+PY
