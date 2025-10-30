@@ -1,7 +1,6 @@
 from django.test import TestCase
-
-from django.test import TestCase
 from django.urls import reverse
+
 
 class SmokeTests(TestCase):
     def test_site_renders(self):
@@ -13,4 +12,3 @@ class SmokeTests(TestCase):
     def test_admin_login_page(self):
         resp = self.client.get(reverse("admin:login"))
         self.assertEqual(resp.status_code, 200)
-
