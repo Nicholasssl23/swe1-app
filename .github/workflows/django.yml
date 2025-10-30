@@ -55,7 +55,7 @@ jobs:
       - name: Set env for Django
         run: |
           echo "DJANGO_SECRET_KEY=test-ci-key" >> $GITHUB_ENV
-          echo "DJANGO_SETTINGS_MODULE=mysite.settings" >> $GITHUB_ENV
+          echo "DJANGO_SETTINGS_MODULE=mysite.mysite.settings" >> $GITHUB_ENV
 
       - name: Run tests with coverage (pytest)
         run: |
