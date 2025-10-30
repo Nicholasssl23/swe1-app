@@ -98,17 +98,26 @@ if os.getenv("RDS_DB_NAME"):
         }
     }
 else:
-    SQLITE_DIR = Path("/var/app/data")
-    SQLITE_DIR.mkdir(
-        parents=True, exist_ok=True
-    )  # harmless locally; on EB we also chmod in hook
+    # Use a writable path. On Elastic Beanstalk, /var/app/data is correct.
+    # In CI/local, fall back to the project directory.
+    eb_sqlite_root = Path("/var/app/data")
+    if eb_sqlite_root.exists():
+        sqlite_root = eb_sqlite_root
+    else:
+        sqlite_root = BASE_DIR
+
+    try:
+        sqlite_root.mkdir(parents=True, exist_ok=True)
+    except PermissionError:
+        # Some environments disallow creating /var/app; fall back to BASE_DIR
+        sqlite_root = BASE_DIR
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": str(SQLITE_DIR / "db.sqlite3"),
+            "NAME": str(sqlite_root / "db.sqlite3"),
         }
     }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
